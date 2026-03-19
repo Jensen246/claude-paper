@@ -10,7 +10,7 @@
     <div class="library-content">
       <div class="library-header">
         <h1>Your Research Collection</h1>
-        <p class="subtitle">All papers stored in: <code>~/claude-papers/papers/</code></p>
+        <p class="subtitle">All papers stored in: <code>~/claude-papers-data/papers/</code></p>
       </div>
 
       <SearchFilterBar

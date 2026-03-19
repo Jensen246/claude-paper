@@ -13,7 +13,7 @@ export default defineEventHandler((event) => {
   }
 
   try {
-    const paperDir = path.join(homedir(), 'claude-papers/papers', slug)
+    const paperDir = path.join(homedir(), 'claude-papers-data/papers', slug)
     const readmePath = path.join(paperDir, 'README.md')
 
     if (!fs.existsSync(readmePath)) {

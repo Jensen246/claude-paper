@@ -13,9 +13,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const papersDir = path.join(homedir(), 'claude-papers/papers')
+    const papersDir = path.join(homedir(), 'claude-papers-data/papers')
     const paperDir = path.join(papersDir, slug)
-    const indexPath = path.join(homedir(), 'claude-papers/index.json')
+    const indexPath = path.join(homedir(), 'claude-papers-data/index.json')
 
     if (!fs.existsSync(paperDir)) {
       throw createError({

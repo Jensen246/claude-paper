@@ -97,13 +97,13 @@ Output includes:
 Save to:
 
 ```
-~/claude-papers/papers/{paper-slug}/meta.json
+~/claude-papers-data/papers/{paper-slug}/meta.json
 ```
 
 Copy original PDF:
 
 ```bash
-cp <pdf-path> ~/claude-papers/papers/{paper-slug}/paper.pdf
+cp <pdf-path> ~/claude-papers-data/papers/{paper-slug}/paper.pdf
 ```
 
 Fallback:
@@ -161,8 +161,8 @@ Examples:
 
 Persist these 2 tags in both locations:
 
-* `~/claude-papers/papers/{paper-slug}/meta.json` as `tags`
-* `~/claude-papers/index.json` entry as `tags`
+* `~/claude-papers-data/papers/{paper-slug}/meta.json` as `tags`
+* `~/claude-papers-data/index.json` entry as `tags`
 
 ---
 
@@ -172,7 +172,7 @@ Persist these 2 tags in both locations:
 
 **Output path:**
 ```
-~/claude-papers/papers/{paper-slug}/paper-review.md
+~/claude-papers-data/papers/{paper-slug}/paper-review.md
 ```
 
 ## Writing Guidelines
@@ -233,7 +233,7 @@ Create a comprehensive analysis that positions this paper within the broader res
 
 **Output path:**
 ```
-~/claude-papers/papers/{paper-slug}/research-context.md
+~/claude-papers-data/papers/{paper-slug}/research-context.md
 ```
 
 ## Research Lineage (Most Important Section)
@@ -277,7 +277,7 @@ Create a single self-contained HTML file for interactively exploring the paper's
 
 **Output path:**
 ```
-~/claude-papers/papers/{paper-slug}/index.html
+~/claude-papers-data/papers/{paper-slug}/index.html
 ```
 
 ## Requirements
@@ -322,7 +322,7 @@ Append new entry to the papers array:
 ```
 **IMPORTANT**: The index.json file must be located at:
 ```
-~/claude-papers/index.json
+~/claude-papers-data/index.json
 ```
 
 ---

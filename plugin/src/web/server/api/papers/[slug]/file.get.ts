@@ -179,7 +179,7 @@ export default defineEventHandler((event) => {
   }
 
   try {
-    const paperDir = path.join(homedir(), 'claude-papers/papers', slug)
+    const paperDir = path.join(homedir(), 'claude-papers-data/papers', slug)
     const fullPath = path.join(paperDir, filePath)
 
     // Security: ensure the path is within the paper directory

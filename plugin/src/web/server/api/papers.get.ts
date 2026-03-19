@@ -4,7 +4,7 @@ import { homedir } from 'os'
 
 export default defineEventHandler(() => {
   try {
-    const indexPath = path.join(homedir(), 'claude-papers/index.json')
+    const indexPath = path.join(homedir(), 'claude-papers-data/index.json')
 
     if (!fs.existsSync(indexPath)) {
       return []
