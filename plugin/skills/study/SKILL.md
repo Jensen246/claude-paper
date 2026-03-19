@@ -166,13 +166,13 @@ Persist these 2 tags in both locations:
 
 ---
 
-# Step 3: Generate Detailed Paper Review (`paper-review.md`)
+# Step 3: Generate Detailed Paper Review (`README.md`)
 
 **This is the most important step.** Create a comprehensive, textbook-level detailed review of the paper.
 
 **Output path:**
 ```
-~/claude-papers-data/papers/{paper-slug}/paper-review.md
+~/claude-papers-data/papers/{paper-slug}/README.md
 ```
 
 ## CRITICAL: Incremental Writing Strategy
@@ -258,7 +258,7 @@ Create a comprehensive analysis that positions this paper within the broader res
 
 ## CRITICAL: Incremental Writing Strategy
 
-Same as paper-review.md — write section by section:
+Same as README.md — write section by section:
 
 1. **First call**: Use `Write` to create the file with Research Lineage section
 2. **Second call**: Use `Edit` to append Core Insights section
@@ -383,46 +383,39 @@ Invoke:
 
 After all files are generated:
 
-## Present Questions to User
+## How This Works
 
-Generate 15 questions about the paper:
-* 5 basic (test understanding of core concepts)
-* 5 intermediate (test understanding of method details and design choices)
-* 5 advanced (test ability to critically analyze, extend, or compare)
+This is a **user-driven** Q&A loop. The user asks questions; you answer and update the documents.
 
-Present ALL questions to the user at once and ask them to pick any they want to discuss.
+- Invite the user to ask anything about the paper — concepts they didn't understand, design choices they want explained, comparisons with other work, etc.
+- Do NOT generate a list of questions and present them to the user.
 
-## How to Handle Answers
+## How to Handle User Questions
 
 **IMPORTANT: Do NOT create separate Q&A files.**
 
-When the user discusses a question or asks for deeper explanation:
+When the user asks a question:
 
 1. Provide the detailed answer in conversation
-2. Then **insert the Q&A content into `paper-review.md`** at the most relevant location
-3. Use the following format for inserted content:
+2. Then **insert the answer into `README.md`** at the most relevant location using Edit
+3. Use the following format:
 
 ```markdown
-> **Q: [Question text]**
+> **Q: [User's question]**
 >
-> [Detailed answer, integrated naturally into the surrounding context]
+> [Detailed answer]
 ```
 
-For example, if a question is about a specific formula, insert the Q&A right after the formula's explanation section in `paper-review.md`.
+Insert it right after the most relevant section in `README.md` (e.g. after the formula being asked about, after the experiment being questioned, etc.).
 
-This makes `paper-review.md` a **living document** that grows richer with each Q&A interaction.
+This makes `README.md` a **living document** that grows richer with each interaction.
 
-## Continuing the Loop
+## Handling Special Requests
 
-After answering questions, ask the user:
-* What part is still unclear?
-* Do you want deeper mathematical breakdown of any component?
-* Do you want comparison with another specific paper?
-
-If the user mentions a specific paper for comparison:
+If the user asks for comparison with a specific paper:
 * Add the comparison to `research-context.md` in the Research Lineage section
-* Use WebSearch if needed to gather information about the referenced paper
+* Use WebSearch if needed to gather information about that paper
 
-All deeper discussions should be integrated back into either `paper-review.md` or `research-context.md` — never create standalone files.
+All answers should be integrated back into either `README.md` or `research-context.md` — never create standalone files.
 
 ---
