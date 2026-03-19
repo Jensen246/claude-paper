@@ -2,7 +2,7 @@
 name: study
 description: Use this skill when the user wants to read, study, analyze, or deeply understand a research paper (PDF).
 disable-model-invocation: false
-allowed-tools: Bash, Write, Edit, Read
+allowed-tools: Bash, Write, Edit, Read, WebSearch
 ---
 
 # Paper Study Workflow
@@ -23,7 +23,7 @@ Facilitate deep conceptual understanding and research-level thinking.
 Secondary Objective:
 Create a structured, reusable paper knowledge system.
 
-This workflow is not just for summarizing — it builds a learning environment around the paper.
+**Detail Level**: You must produce textbook-level detailed output. Never summarize briefly — the goal is that someone reading your output should NOT need to read the original paper to understand every technical detail.
 
 ---
 
@@ -34,10 +34,6 @@ if [ ! -f "${CLAUDE_PLUGIN_ROOT}/.installed" ]; then
   echo "First run - installing dependencies..."
   cd "${CLAUDE_PLUGIN_ROOT}"
   npm install || exit 1
-
-  # Install Python dependencies for image extraction
-  python3 -m pip install pymupdf --user 2>/dev/null || pip3 install pymupdf --user 2>/dev/null || echo "Warning: Failed to install pymupdf"
-
   touch "${CLAUDE_PLUGIN_ROOT}/.installed"
   echo "Dependencies installed!"
 fi
@@ -46,7 +42,6 @@ fi
 Recommended:
 
 * Node >= 18
-* Python 3 with pip (for image extraction)
 
 ---
 
@@ -142,12 +137,7 @@ Before generating any files, evaluate:
    * Novel architecture
    * Heavy mathematical derivation
 
-This assessment determines:
-
-* Whether to create method.md
-* Whether to create .ipynb
-* Explanation depth
-* Code demo complexity
+This assessment determines explanation depth and the level of detail in generated materials.
 
 ---
 
@@ -176,152 +166,112 @@ Persist these 2 tags in both locations:
 
 ---
 
-# Step 3: Generate Core Study Materials
+# Step 3: Generate Detailed Paper Review (`paper-review.md`)
 
-Create folder:
+**This is the most important step.** Create a comprehensive, textbook-level detailed review of the paper.
 
+**Output path:**
 ```
-~/claude-papers/papers/{paper-slug}/
-```
-
----
-
-## Required Files
-
-### README.md
-
-* What the paper is about (one paragraph)
-* Difficulty level
-* How to navigate materials
-* Key takeaways
-* Estimated study time
-* Folder structure overview
-
----
-
-### summary.md
-
-* Background context
-* Problem statement
-* Main contributions
-* Key results
-* Quantitative metrics
-
----
-
-### insights.md (Most Important)
-
-* Core idea explained plainly
-* Why this works
-* What conceptual shift it introduces
-* Trade-offs
-* Limitations
-* Comparison to prior work
-* Practical implications
-
----
-
-### qa.md
-
-15 questions:
-
-* 5 basic
-* 5 intermediate
-* 5 advanced
-
-Use this format:
-
-```markdown
-### Question
-
-<details>
-<summary>Answer</summary>
-
-Detailed explanation.
-
-</details>
-
----
+~/claude-papers/papers/{paper-slug}/paper-review.md
 ```
 
+## Writing Guidelines
+
+You are writing a detailed Chinese (or user's language) review that serves as a **complete replacement for reading the original paper**. Follow these principles:
+
+- Write like a textbook chapter, not a summary
+- Never skip important details — if the paper mentions it, you should cover it
+- Every formula must include an intuitive explanation of what it means and why it's designed that way
+- Experimental results MUST include specific numbers from the paper (tables, metrics, scores)
+- The target reader should be able to fully understand every technical detail without reading the original paper
+
+## Required Structure
+
+### 1. Background and Motivation
+- Current state of the research field
+- The specific problem being addressed
+- Why existing approaches are insufficient (with concrete examples from the paper)
+- What gap this paper fills
+
+### 2. Related Work (Brief)
+- Briefly mention key prior works referenced in the paper
+- Note: A more detailed analysis of the research landscape goes in `research-context.md`
+
+### 3. Method — Detailed Explanation
+- **Overall framework**: High-level overview of the proposed approach, with ASCII architecture diagram if applicable
+- **Each core component/module**: Describe in detail with:
+  - Design motivation (why this component is needed)
+  - Formal definition (formulas with variable explanations)
+  - Intuitive explanation (what the formula/algorithm is actually doing)
+  - Algorithm flow / pseudocode where applicable
+- **Key implementation details**: Hyperparameters, training strategies, optimization tricks
+- **How components work together**: The full pipeline from input to output
+
+### 4. Experimental Setup
+- Datasets used (with sizes, splits, preprocessing)
+- Evaluation metrics (with definitions if non-standard)
+- Baselines and competing methods (list all)
+- Implementation details (hardware, training time, batch size, learning rate, etc.)
+
+### 5. Experimental Results
+- **Main results table(s)**: Reproduce key tables with actual numbers from the paper
+- **Ablation studies**: What each component contributes (with numbers)
+- **Analysis experiments**: Any additional analysis the paper provides
+- **Visualization results**: Describe qualitative results, figures, case studies
+- **Comparison with SOTA**: How does it compare to the best prior work
+
+### 6. Key Findings and Observations
+- Interesting phenomena discovered during experiments
+- Unexpected results or behaviors
+- Insights the authors highlight
+
 ---
 
-## Conditional Files
+# Step 3.5: Generate Research Context (`research-context.md`)
 
-### method.md (Recommended for most papers)
+Create a comprehensive analysis that positions this paper within the broader research landscape. This file is **independent of the paper's specific technical details** — it focuses on the "before and after" context.
 
-Include:
-
-* Component breakdown
-* Algorithm flow
-* Architecture diagram (ASCII if needed)
-* Step-by-step explanation
-* Pseudocode (balanced with explanation)
-* Implementation pitfalls
-* Hyperparameter sensitivity
-* Reproduction risks
-
----
-
-### mental-model.md (Recommended for most papers)
-
-* What type of problem is this?
-* What prior knowledge is assumed?
-* How it fits into the broader research map
-* How to mentally categorize this work
-
----
-
-### reflection.md (Optional auto-generated)
-
-* If I were to extend this paper
-* What open problems remain
-* What assumptions are fragile
-* Where it might fail in practice
-
----
-
-# Step 4: Code Demonstrations (Mandatory)
-
-At least one runnable demo must be created.
-
-**All code demos must be placed in:**
+**Output path:**
 ```
-~/claude-papers/papers/{paper-slug}/code/
+~/claude-papers/papers/{paper-slug}/research-context.md
 ```
 
-Create the code directory first:
+## Research Lineage (Most Important Section)
 
-```bash
-mkdir -p ~/claude-papers/papers/{paper-slug}/code
-```
+Build a chronological narrative of how this research area evolved:
 
-Guidelines:
+- **Timeline of key works**: List the most important prior papers in chronological order
+- **For each prior work**: Explain its core idea, contribution, and limitations (2-3 sentences each)
+- **Evolution logic**: How each work addressed limitations of its predecessors
+- **How this paper fits**: What specific gaps or limitations of prior work does this paper address
 
-* Self-contained
-* Runnable independently
-* Educational comments (explain why)
-* Focus on core contribution
-* Prefer clarity over completeness
+**Sources for this section:**
+1. The paper's own Related Work section (primary source)
+2. Use `WebSearch` to look up additional context about key referenced papers if needed
+3. **If the user mentions specific related papers**, you MUST include those papers in the lineage and explicitly analyze their logical relationship to this paper
 
-Possible types:
+### Core Insights
 
-* Simplified conceptual implementation
-* Visualization script
-* Minimal architecture demo
-* Interactive notebook (.ipynb)
+- What **conceptual shift** does this paper introduce?
+- Why does this approach work at a deeper level (not just "experiments show...")
+- Detailed comparison table with the most closely related works (dimensions: method, performance, complexity, assumptions, etc.)
 
-Name descriptively:
+### Reflection and Extension
 
-* model_demo.py
-* vectorized_planning_demo.py
-* contrastive_loss_visualization.ipynb
+- If you were to extend this paper, what directions would you pursue? (at least 3 concrete ideas)
+- Which assumptions in the paper are fragile? Under what conditions might they break?
+- Where might this approach fail in practice?
+- What open questions remain?
 
-Avoid generic names.
+### Mental Model
+
+- What prerequisite knowledge is needed to understand this paper?
+- How to position this work in the broader research map (ASCII diagram encouraged)
+- Recommended follow-up reading (3-5 papers)
 
 ---
 
-# Step 5: Generate Interactive HTML Explorer
+# Step 4: Generate Interactive HTML Explorer
 
 Create a single self-contained HTML file for interactively exploring the paper's core concepts.
 
@@ -344,25 +294,7 @@ Every interactive control (slider, toggle, dropdown) should visibly change the v
 
 ---
 
-# Step 6: Extract Images
-
-```bash
-mkdir -p ~/claude-papers/papers/{paper-slug}/images
-
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/study/scripts/extract-images.py \
-  paper.pdf \
-  ~/claude-papers/papers/{paper-slug}/images
-```
-
-Rename key images descriptively:
-
-* architecture.png
-* training_pipeline.png
-* results_table.png
-
----
-
-# Step 7: Update Index
+# Step 5: Update Index
 
 **CRITICAL**: Read existing index.json first, then append the new paper. Never overwrite the entire file.
 
@@ -395,8 +327,7 @@ Append new entry to the papers array:
 
 ---
 
-
-# Step 8: Relaunch Web UI
+# Step 6: Relaunch Web UI
 
 Invoke:
 
@@ -404,65 +335,52 @@ Invoke:
 /claude-paper:webui
 ```
 
+---
 
-# Step 9: Interactive Deep Learning Loop
+# Step 7: Interactive Deep Learning Loop
 
 After all files are generated:
 
-## Present to User:
+## Present Questions to User
 
-1. Ask:
+Generate 15 questions about the paper:
+* 5 basic (test understanding of core concepts)
+* 5 intermediate (test understanding of method details and design choices)
+* 5 advanced (test ability to critically analyze, extend, or compare)
 
-   * What part is still unclear?
-   * Do you want deeper mathematical breakdown?
-   * Do you want implementation-level analysis?
-   * Do you want comparison with another paper?
+Present ALL questions to the user at once and ask them to pick any they want to discuss.
 
-2. Allow user to:
+## How to Handle Answers
 
-   * Ask deeper questions
-   * Summarize their understanding
-   * Propose new ideas
+**IMPORTANT: Do NOT create separate Q&A files.**
 
----
+When the user discusses a question or asks for deeper explanation:
 
-## If user asks deeper questions:
+1. Provide the detailed answer in conversation
+2. Then **insert the Q&A content into `paper-review.md`** at the most relevant location
+3. Use the following format for inserted content:
 
-Generate a new file inside the same folder:
+```markdown
+> **Q: [Question text]**
+>
+> [Detailed answer, integrated naturally into the surrounding context]
+```
 
-Examples:
+For example, if a question is about a specific formula, insert the Q&A right after the formula's explanation section in `paper-review.md`.
 
-* deep-dive-contrastive-loss.md
-* math-derivation-breakdown.md
-* comparison-with-transformers.md
-* extension-ideas.md
+This makes `paper-review.md` a **living document** that grows richer with each Q&A interaction.
 
----
+## Continuing the Loop
 
-## If user provides their own summary:
+After answering questions, ask the user:
+* What part is still unclear?
+* Do you want deeper mathematical breakdown of any component?
+* Do you want comparison with another specific paper?
 
-1. Refine it.
-2. Improve structure.
-3. Save as:
+If the user mentions a specific paper for comparison:
+* Add the comparison to `research-context.md` in the Research Lineage section
+* Use WebSearch if needed to gather information about the referenced paper
 
-* user-summary-v1.md
-
-If iterated:
-
-* user-summary-v2.md
-
----
-
-## If user wants structured consolidation:
-
-Create:
-
-* consolidated-notes.md
-* study-session-1.md
-* exam-review.md
-
----
-
-This makes the paper folder a growing knowledge node.
+All deeper discussions should be integrated back into either `paper-review.md` or `research-context.md` — never create standalone files.
 
 ---
