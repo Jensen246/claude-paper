@@ -175,6 +175,24 @@ Persist these 2 tags in both locations:
 ~/claude-papers-data/papers/{paper-slug}/paper-review.md
 ```
 
+## CRITICAL: Incremental Writing Strategy
+
+The paper review is a long document. You MUST write it **section by section** to avoid write failures:
+
+1. **First call**: Use `Write` to create the file with Section 1 (Background and Motivation) + Section 2 (Related Work)
+2. **Second call**: Use `Edit` to append Section 3 (Method — Detailed Explanation) at the end of the file
+3. **Third call**: Use `Edit` to append Section 4 (Experimental Setup) at the end of the file
+4. **Fourth call**: Use `Edit` to append Section 5 (Experimental Results) at the end of the file
+5. **Fifth call**: Use `Edit` to append Section 6 (Key Findings and Observations) at the end of the file
+
+For each Edit append, match the last line of the existing content as `old_string` and include that line plus the new section as `new_string`. For example:
+```
+old_string: "[last line of current content]"
+new_string: "[last line of current content]\n\n---\n\n## 3. Method — Detailed Explanation\n\n[new content...]"
+```
+
+**NEVER attempt to write the entire review in a single Write call — it WILL fail.**
+
 ## Writing Guidelines
 
 You are writing a detailed Chinese (or user's language) review that serves as a **complete replacement for reading the original paper**. Follow these principles:
@@ -187,17 +205,17 @@ You are writing a detailed Chinese (or user's language) review that serves as a 
 
 ## Required Structure
 
-### 1. Background and Motivation
+### 1. Background and Motivation (Write — creates file)
 - Current state of the research field
 - The specific problem being addressed
 - Why existing approaches are insufficient (with concrete examples from the paper)
 - What gap this paper fills
 
-### 2. Related Work (Brief)
+### 2. Related Work (Write — same call as Section 1)
 - Briefly mention key prior works referenced in the paper
 - Note: A more detailed analysis of the research landscape goes in `research-context.md`
 
-### 3. Method — Detailed Explanation
+### 3. Method — Detailed Explanation (Edit — append)
 - **Overall framework**: High-level overview of the proposed approach, with ASCII architecture diagram if applicable
 - **Each core component/module**: Describe in detail with:
   - Design motivation (why this component is needed)
@@ -207,20 +225,22 @@ You are writing a detailed Chinese (or user's language) review that serves as a 
 - **Key implementation details**: Hyperparameters, training strategies, optimization tricks
 - **How components work together**: The full pipeline from input to output
 
-### 4. Experimental Setup
+If the method section itself is very long (e.g. multiple complex components), split it further into multiple Edit calls — one per major component.
+
+### 4. Experimental Setup (Edit — append)
 - Datasets used (with sizes, splits, preprocessing)
 - Evaluation metrics (with definitions if non-standard)
 - Baselines and competing methods (list all)
 - Implementation details (hardware, training time, batch size, learning rate, etc.)
 
-### 5. Experimental Results
+### 5. Experimental Results (Edit — append)
 - **Main results table(s)**: Reproduce key tables with actual numbers from the paper
 - **Ablation studies**: What each component contributes (with numbers)
 - **Analysis experiments**: Any additional analysis the paper provides
 - **Visualization results**: Describe qualitative results, figures, case studies
 - **Comparison with SOTA**: How does it compare to the best prior work
 
-### 6. Key Findings and Observations
+### 6. Key Findings and Observations (Edit — append)
 - Interesting phenomena discovered during experiments
 - Unexpected results or behaviors
 - Insights the authors highlight
@@ -236,7 +256,18 @@ Create a comprehensive analysis that positions this paper within the broader res
 ~/claude-papers-data/papers/{paper-slug}/research-context.md
 ```
 
-## Research Lineage (Most Important Section)
+## CRITICAL: Incremental Writing Strategy
+
+Same as paper-review.md — write section by section:
+
+1. **First call**: Use `Write` to create the file with Research Lineage section
+2. **Second call**: Use `Edit` to append Core Insights section
+3. **Third call**: Use `Edit` to append Reflection and Extension section
+4. **Fourth call**: Use `Edit` to append Mental Model section
+
+**NEVER attempt to write the entire file in a single Write call.**
+
+## Research Lineage (Write — creates file)
 
 Build a chronological narrative of how this research area evolved:
 
@@ -250,20 +281,20 @@ Build a chronological narrative of how this research area evolved:
 2. Use `WebSearch` to look up additional context about key referenced papers if needed
 3. **If the user mentions specific related papers**, you MUST include those papers in the lineage and explicitly analyze their logical relationship to this paper
 
-### Core Insights
+### Core Insights (Edit — append)
 
 - What **conceptual shift** does this paper introduce?
 - Why does this approach work at a deeper level (not just "experiments show...")
 - Detailed comparison table with the most closely related works (dimensions: method, performance, complexity, assumptions, etc.)
 
-### Reflection and Extension
+### Reflection and Extension (Edit — append)
 
 - If you were to extend this paper, what directions would you pursue? (at least 3 concrete ideas)
 - Which assumptions in the paper are fragile? Under what conditions might they break?
 - Where might this approach fail in practice?
 - What open questions remain?
 
-### Mental Model
+### Mental Model (Edit — append)
 
 - What prerequisite knowledge is needed to understand this paper?
 - How to position this work in the broader research map (ASCII diagram encouraged)
@@ -279,6 +310,17 @@ Create a single self-contained HTML file for interactively exploring the paper's
 ```
 ~/claude-papers-data/papers/{paper-slug}/index.html
 ```
+
+## CRITICAL: Incremental Writing Strategy
+
+HTML files can be very large. Write in stages:
+
+1. **First call**: Use `Write` to create the file with the complete HTML skeleton (`<!DOCTYPE html>` through `</html>`), including all CSS styles and the structural HTML. Put a placeholder comment `<!-- JS_CONTENT -->` where the JavaScript will go.
+2. **Second call**: Use `Edit` to replace `<!-- JS_CONTENT -->` with the actual JavaScript code.
+
+If the JavaScript is still too large, split it into multiple Edit calls by using sequential placeholder comments (`<!-- JS_PART_1 -->`, `<!-- JS_PART_2 -->`, etc.).
+
+**NEVER attempt to write the entire HTML file in a single Write call — it WILL fail for complex visualizations.**
 
 ## Requirements
 
